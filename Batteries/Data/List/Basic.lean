@@ -230,6 +230,13 @@ findIdxNth (· < 3) [5, 1, 3, 2, 4, 0, 1, 4] 2 = 5
   | a :: xs, 0, s => bif p a then s else go xs 0 (s + 1)
   | a :: xs, n + 1, s => bif !(p a) then go xs (n + 1) (s + 1) else go xs n (s + 1)
 
+/-- `findLastIdx? p xs` returns the index of the last element for which `p` returns `true`,
+or `none` if none exists. `findLastIdx` is not provided since the most sensible default value
+(`-1`) is not in `Nat`.
+-/
+@[inline] def findLastIdx? (p : α → Bool) (xs : List α) (start : Nat := 0) : Option Nat :=
+  foldlIdx (fun i prev a => if p a then some i else prev) none xs start
+
 /--
 `idxsOf a l s` is the list of all indexes of `a` in `l`,  added to an
 optional parameter `s`. For example:
@@ -250,6 +257,12 @@ idxOfNth 1 [5, 1, 3, 2, 4, 0, 1, 4] 1 = 6
 -/
 def idxOfNth [BEq α] (a : α) (xs : List α) (n : Nat) : Nat :=
   xs.findIdxNth (· == a) n
+
+/-- `lastIdxOf? a xs` returns the index of the last instance of `a` in `xs`, or `none` if it
+does not exist in `xs`.
+-/
+def lastIdxOf? [BEq α] (a : α) (xs : List α) : Option Nat :=
+  xs.findLastIdx? (· == a)
 
 /-- `countPBefore p xs i hip` counts the number of `x` in `xs` before the `i`th index for
 which `p x = true`.
